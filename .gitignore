@@ -302,3 +302,5 @@ $RECYCLE.BIN/
 # End of https://www.toptal.com/developers/gitignore/api/windows,django,python,visualstudiocode,venv
 
 .BPLUS_COUPON_BOOK
+
+uploads

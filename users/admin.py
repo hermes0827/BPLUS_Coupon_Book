@@ -8,12 +8,12 @@ class CustomUserAdmin(UserAdmin):
 
     """Custom User Admin"""
 
-    list_display = ("username", "email")
+    list_display = ("username",)
     fieldsets = (
         (
-            "Custom",
+            None,
             {
-                "fields": ("username",),
+                "fields": ("username", "name"),
             },
         ),
     )
