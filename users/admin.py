@@ -8,12 +8,18 @@ class CustomUserAdmin(UserAdmin):
 
     """Custom User Admin"""
 
-    list_display = ("username",)
+    list_display = ("email", "login_method", "email_verified")
     fieldsets = (
         (
             None,
             {
-                "fields": ("username", "name"),
+                "fields": (
+                    "email",
+                    "login_method",
+                    "email_verified",
+                    "email_secret",
+                    "is_superuser",
+                ),
             },
         ),
     )

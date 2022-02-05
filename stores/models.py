@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from core import models as core_models
 from users import models as user_models
 
@@ -43,10 +44,15 @@ class Store(core_models.TimeStampedModel):
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse("stores:detail", kwargs={"pk": self.pk})
+
     def total_avg(self):
         all_ratings = self.review_set.all()
-        print(all_ratings)
         total = 0
-        for r in all_ratings:
-            total += r.rating_average()
-        return total / len(all_ratings)
+        if len(all_ratings) > 0:
+
+            for r in all_ratings:
+                total += r.rating_average()
+            return total / len(all_ratings)
+        return 0
