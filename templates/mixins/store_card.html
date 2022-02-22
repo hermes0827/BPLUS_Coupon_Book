@@ -1,0 +1,17 @@
+<div class="w-1/4 mb-10 px-2 overflow-hidden">
+    <a href="{% url 'stores:detail' store.pk%}">
+        <div class="w-full h-64 mb-8 bg-cover bg-center background-image: url({store.first_photo})">
+        </div>
+        <div class="flex justify-end">
+            <span class="'text-sm flex items-center">
+                <i class="fas fa-star text-red-300 text-xs mr-2"></i>{{store.total_avg}}
+            </span>
+        </div>
+        <span class="w-11/12  block truncate">
+            <a class="text-black" href="{% url "stores:detail" store.pk %}">
+                {{store.name}}
+            </a>
+        </span>
+    </a>
+
+</div>

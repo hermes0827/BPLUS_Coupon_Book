@@ -1,12 +1,12 @@
 from django.views.generic import ListView, DetailView
 from django.shortcuts import render
-from django.http import Http404
 from . import models, forms
 
 
 class Homeview(ListView):
     model = models.Store
     paginate_by = 10
+    context_object_name = "stores"
 
 
 """ FBV of the detail view """

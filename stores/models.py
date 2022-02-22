@@ -38,7 +38,11 @@ class Store(core_models.TimeStampedModel):
     address_detail = models.CharField(max_length=140, default="")
     menu = models.CharField(max_length=100, choices=MENU_CHOICES, null=True, blank=True)
     user = models.ForeignKey(
-        user_models.User, verbose_name="사장님", on_delete=models.PROTECT
+        user_models.User,
+        related_name="stores",
+        verbose_name="사장님",
+        on_delete=models.PROTECT,
+        to_field="email",
     )
 
     def __str__(self):
@@ -51,8 +55,11 @@ class Store(core_models.TimeStampedModel):
         all_ratings = self.review_set.all()
         total = 0
         if len(all_ratings) > 0:
-
             for r in all_ratings:
                 total += r.rating_average()
-            return total / len(all_ratings)
+            return round(total / len(all_ratings), 2)
         return 0
+
+    def first_photo(self):
+        photo1, photo2, photo3 = self.photos.all()[:1]
+        return photo1.file.url

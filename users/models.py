@@ -2,6 +2,7 @@ import uuid
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.shortcuts import reverse
 from django.core.mail import send_mail
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
@@ -19,12 +20,16 @@ class User(AbstractUser):
 
     LOGIN_CHOICES = ((LOGIN_EMAIL, "Email"), (LOGIN_KAKAO, "Kakao"))
 
-    email = models.EmailField("email address")
+    name = models.CharField("이름", max_length=100)
+    email = models.EmailField("email address", unique=True)
     login_method = models.CharField(
         max_length=50, choices=LOGIN_CHOICES, default=LOGIN_EMAIL
     )
     email_verified = models.BooleanField(default=False)
     email_secret = models.CharField(max_length=16, default="", blank=True)
+
+    def get_absolute_url(self):
+        return reverse("users:profile", kwargs={"pk": self.pk})
 
     def verify_email(self):
         if self.email_verified is False:

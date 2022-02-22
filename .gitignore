@@ -304,3 +304,5 @@ $RECYCLE.BIN/
 .BPLUS_COUPON_BOOK
 
 uploads
+
+node_modules

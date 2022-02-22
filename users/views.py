@@ -2,8 +2,10 @@ import os
 import requests
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import FormView
+from django.contrib.auth.views import PasswordChangeView
+from django.views.generic import FormView, DetailView, UpdateView
 from django.shortcuts import render, redirect, reverse
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from . import forms, models
 
@@ -21,12 +23,14 @@ class LoginView(View):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 login(request, user)
+                messages.success(request, f"Welcome back {user.email}")
                 return redirect(reverse("core:home"))
         return render(request, "users/login.html", {"form": form})
 
 
 def log_out(request):
     logout(request)
+    messages.info(request, "See you later")
     return redirect(reverse("core:home"))
 
 
@@ -79,7 +83,7 @@ def kakao_callback(request):
         token_json = token_request.json()
         error = token_json.get("error", None)
         if error is not None:
-            raise KakaoException()
+            raise KakaoException("Can't get authorization code.")
         access_token = token_json.get("access_token")
         profile_request = requests.get(
             "https://kapi.kakao.com/v2/user/me",
@@ -90,11 +94,11 @@ def kakao_callback(request):
         profile_json = profile_request.json()
         email = profile_json.get("kakao_account").get("email", None)
         if email is None:
-            raise KakaoException()
+            raise KakaoException("Please also give me your email.")
         try:
             user = models.User.objects.get(email=email)
             if user.login_method != models.User.LOGIN_KAKAO:
-                raise KakaoException()
+                raise KakaoException("Please login with: {{user.login_method}}")
         except models.User.DoesNotExist:
             user = models.User.objects.create(
                 username=email,
@@ -105,6 +109,27 @@ def kakao_callback(request):
             user.set_unusable_password()
             user.save()
         login(request, user)
+        messages.success(requests, f"Welcome back {user.email}")
         return redirect(reverse("core:home"))
-    except KakaoException:
+    except KakaoException as e:
+        messages.error(requests, e)
         return redirect(reverse("users:login"))
+
+
+class UserProfileView(DetailView):
+    model = models.User
+    context_object_name = "user_obj"
+
+
+class UpdateProfileView(UpdateView):
+
+    model = models.User
+    template_name = "users/update-profile.html"
+    fields = ("name",)
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+
+class UpdatePasswordView(PasswordChangeView):
+    template_name = "users/update-password.html"

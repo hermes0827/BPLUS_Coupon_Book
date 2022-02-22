@@ -1,0 +1,23 @@
+<form method="POST" class='w-full'>
+    
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+            {{error}}
+        {% endfor %}
+    {% endif %}
+
+    {% for field in form %}
+    <div class="input">
+        {{field}}
+        {% if field.errors %}
+            {% for error in field.errors %}
+                <span class="text-red-700 font-medium text-sm">{{error}}</span>
+            {% endfor %}
+        {% endif %}    
+    </div>
+    {% endfor %}
+
+    <button class='btn'>{{cta}}</button>
+</form> 
